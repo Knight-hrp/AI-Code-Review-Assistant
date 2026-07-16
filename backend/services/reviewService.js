@@ -1,27 +1,57 @@
 const pool = require("../config/db");
 
-// Existing createReview() here...
+const createReview = async (
+    userId,
+    title,
+    language,
+    code,
+    reviewOutput
+) => {
 
-const getReviewsByUser = async (userId) => {
     const result = await pool.query(
         `
-    SELECT *
-    FROM reviews
-    WHERE user_id = $1
-    ORDER BY created_at DESC
-    `,
+        INSERT INTO reviews
+        (user_id,title,language,code,review_output)
+        VALUES($1,$2,$3,$4,$5)
+        RETURNING *
+        `,
+        [
+            userId,
+            title,
+            language,
+            code,
+            reviewOutput,
+        ]
+    );
+
+    return result.rows[0];
+};
+
+const getReviewsByUser = async (userId) => {
+
+    const result = await pool.query(
+        `
+        SELECT *
+        FROM reviews
+        WHERE user_id=$1
+        ORDER BY created_at DESC
+        `,
         [userId]
     );
 
     return result.rows;
 };
 
-const getReviewById = async (reviewId, userId) => {
+const getReviewById = async (
+    reviewId,
+    userId
+) => {
+
     const result = await pool.query(
         `
         SELECT *
         FROM reviews
-        WHERE id = $1 AND user_id = $2
+        WHERE id=$1 AND user_id=$2
         `,
         [reviewId, userId]
     );
@@ -30,6 +60,7 @@ const getReviewById = async (reviewId, userId) => {
 };
 
 module.exports = {
+    createReview,
     getReviewsByUser,
     getReviewById,
 };

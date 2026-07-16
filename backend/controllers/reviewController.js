@@ -1,37 +1,47 @@
-const reviewModel = require("../models/reviewModel");
 const reviewService = require("../services/reviewService");
+const aiService = require("../services/aiService");
 
 const createReview = async (req, res) => {
     try {
-        const { language, code, title, review_output } = req.body;
+        const { title, language, code } = req.body;
         const userId = req.user.id;
 
-        const reviewOutput = {
-            summary: "Analysis completed successfully.",
-            score: 90,
-            bugs: [],
-            suggestions: [
-                "Use meaningful variable names.",
-                "Add comments where necessary."
-            ]
-        };
-        const review = await reviewModel.createReview(
+        // Ask Gemini to review the code
+        const aiResponse = await aiService.reviewCode(
+            code,
+            language
+        );
+
+        // Remove markdown if Gemini returns ```json
+        const cleanedResponse = aiResponse
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim();
+
+        const reviewOutput = JSON.parse(cleanedResponse);
+
+        // Save review in database
+        const review = await reviewService.createReview(
             userId,
             title,
             language,
             code,
             reviewOutput
         );
-        res.status(201).json({
+
+        return res.status(201).json({
             message: "Review created successfully",
             review,
         });
+
+    } catch (error) {
+        console.error("Create Review Error:", error);
+
+        return res.status(500).json({
+            message: "Internal Server Error",
+        });
     }
-    catch (err) {
-        console.log("Internal Server Error:", err);
-        return res.status(500).json({ message: "Internal Server Error" });
-    }
-}
+};
 
 const getReviews = async (req, res) => {
     try {
@@ -39,30 +49,43 @@ const getReviews = async (req, res) => {
 
         const reviews = await reviewService.getReviewsByUser(userId);
 
-        res.status(200).json(reviews);
+        return res.status(200).json(reviews);
 
     } catch (error) {
-        console.error(error);
+        console.error("Get Reviews Error:", error);
 
-        res.status(500).json({
-            message: "Server Error",
+        return res.status(500).json({
+            message: "Internal Server Error",
         });
     }
 };
 
-const getReviewById = async (reviewId, userId) => {
-    const result = await pool.query(
-        `
-        SELECT *
-        FROM reviews
-        WHERE id = $1 AND user_id = $2
-        `,
-        [reviewId, userId]
-    );
+const getReviewById = async (req, res) => {
+    try {
+        const reviewId = req.params.id;
+        const userId = req.user.id;
 
-    return result.rows[0];
+        const review = await reviewService.getReviewById(
+            reviewId,
+            userId
+        );
+
+        if (!review) {
+            return res.status(404).json({
+                message: "Review not found",
+            });
+        }
+
+        return res.status(200).json(review);
+
+    } catch (error) {
+        console.error("Get Review Error:", error);
+
+        return res.status(500).json({
+            message: "Internal Server Error",
+        });
+    }
 };
-
 
 module.exports = {
     createReview,
