@@ -4,46 +4,48 @@ function Profile() {
     const userStr = localStorage.getItem("user");
     const user = userStr ? JSON.parse(userStr) : { name: "User", email: "user@example.com" };
 
+    const infoFields = [
+        { label: "Full Name", value: user.name },
+        { label: "Email Address", value: user.email },
+        { label: "Account Role", value: "Developer" },
+        { label: "AI Model", value: "Gemini 3.1 Flash Lite" },
+    ];
+
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-dvh bg-[#0b0f1a] w-full">
             <Navbar />
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 page-enter">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Your Profile</h1>
-                    <p className="text-slate-500 mt-1">Manage your account information and preferences.</p>
+                <div className="mb-6 sm:mb-8">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Profile</h1>
+                    <p className="text-slate-400 mt-1 text-sm sm:text-base">Manage your account information.</p>
                 </div>
 
-                <div className="max-w-3xl bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="p-6 md:p-8 space-y-6">
-                        {/* Profile Info Header */}
-                        <div className="flex items-center gap-6 pb-6 border-b border-slate-100">
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-2xl shadow-md">
-                                {user.name ? user.name[0].toUpperCase() : "U"}
+                <div className="max-w-2xl">
+                    <div className="glass rounded-2xl overflow-hidden">
+                        {/* Avatar header banner */}
+                        <div className="h-28 bg-gradient-to-r from-indigo-600/30 to-purple-600/30" />
+
+                        {/* Profile Info Header overlay */}
+                        <div className="px-6 pb-6 -mt-10 sm:-mt-12 flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6 border-b border-white/[0.04]">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl sm:text-4xl font-bold text-white shadow-xl shadow-indigo-500/20 border-4 border-[#0f1320] shrink-0">
+                                {user.name?.[0]?.toUpperCase() || "U"}
                             </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-slate-900">{user.name}</h2>
-                                <p className="text-slate-500">{user.email}</p>
+                            <div className="space-y-1 pb-1">
+                                <h2 className="text-xl sm:text-2xl font-bold text-white leading-none">{user.name}</h2>
+                                <p className="text-sm text-slate-400">{user.email}</p>
                             </div>
                         </div>
 
-                        {/* Details */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                            <div>
-                                <span className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Full Name</span>
-                                <span className="text-slate-800 font-medium">{user.name}</span>
-                            </div>
-                            <div>
-                                <span className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Email Address</span>
-                                <span className="text-slate-800 font-medium">{user.email}</span>
-                            </div>
-                            <div>
-                                <span className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Account Role</span>
-                                <span className="text-slate-800 font-medium">Developer</span>
-                            </div>
-                            <div>
-                                <span className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Integrations</span>
-                                <span className="text-slate-800 font-medium">GitHub (Connected)</span>
+                        <div className="p-6 space-y-6">
+                            {/* Info Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {infoFields.map((field) => (
+                                    <div key={field.label} className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.04]">
+                                        <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">{field.label}</p>
+                                        <p className="text-sm font-medium text-white">{field.value}</p>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

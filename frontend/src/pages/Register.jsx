@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
 import Input from "../components/Input";
 import Button from "../components/Button";
 import api from "../services/api";
@@ -9,11 +8,9 @@ function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
-
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -23,105 +20,78 @@ function Register() {
         setLoading(true);
 
         try {
-            const response = await api.post("/auth/register", {
-                name,
-                email,
-                password,
-            });
-
-            console.log("Register response: ", response.data);
-            setSuccess("Registration successful! Redirecting to login...");
-            
-            setTimeout(() => {
-                navigate("/login");
-            }, 2000);
+            await api.post("/auth/register", { name, email, password });
+            setSuccess("Account created! Redirecting to login…");
+            setTimeout(() => navigate("/login"), 2000);
         } catch (error) {
             console.error("Register error:", error);
-            setError(
-                error.response?.data?.message ||
-                "Something went wrong. Please try again."
-            );
+            setError(error.response?.data?.message || "Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
-            <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 space-y-6 border border-slate-100">
-                <div className="text-center space-y-2">
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-                        Create Account
-                    </h1>
-                    <p className="text-sm text-slate-500">
-                        Sign up to get started with AI Code Reviewer
-                    </p>
-                </div>
+        <div className="min-h-dvh w-full flex items-center justify-center px-6 py-16 bg-[#0b0f1a] relative overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-purple-500/[0.07] blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-indigo-500/[0.05] blur-[100px] pointer-events-none" />
 
-                {error && (
-                    <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg border border-red-100">
-                        {error}
-                    </div>
-                )}
-
-                {success && (
-                    <div className="bg-emerald-50 text-emerald-600 text-sm px-4 py-3 rounded-lg border border-emerald-100">
-                        {success}
-                    </div>
-                )}
-
-                <form onSubmit={handleRegister} className="space-y-4">
-                    <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                            Full Name
-                        </label>
-                        <Input
-                            type="text"
-                            placeholder="John Doe"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                        />
+            <div className="w-full max-w-xl relative page-enter">
+                <div className="glass rounded-3xl px-10 py-14 sm:px-14 sm:py-16">
+                    {/* Logo */}
+                    <div className="flex justify-center mb-10">
+                        <Link to="/" className="flex items-center gap-3.5 hover:opacity-90 transition">
+                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="16 18 22 12 16 6" />
+                                    <polyline points="8 6 2 12 8 18" />
+                                </svg>
+                            </div>
+                            <span className="text-3xl font-bold text-white">Code<span className="text-indigo-400">Review</span></span>
+                        </Link>
                     </div>
 
-                    <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                            Email Address
-                        </label>
-                        <Input
-                            type="email"
-                            placeholder="john@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl font-bold text-white tracking-tight mb-3">Create an account</h1>
+                        <p className="text-lg text-slate-400">Get started with AI-powered code reviews</p>
                     </div>
 
-                    <div>
-                        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-                            Password
-                        </label>
-                        <Input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                    {error && (
+                        <div className="bg-red-500/10 text-red-400 text-sm px-4 py-3.5 rounded-xl border border-red-500/20 flex items-center gap-2.5 mb-8">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            {error}
+                        </div>
+                    )}
+
+                    {success && (
+                        <div className="bg-emerald-500/10 text-emerald-400 text-sm px-4 py-3.5 rounded-xl border border-emerald-500/20 flex items-center gap-2.5 mb-8">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            {success}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleRegister} className="flex flex-col gap-8">
+                        <div className="flex flex-col gap-3">
+                            <label className="text-base font-medium text-slate-300">Full Name</label>
+                            <Input type="text" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <label className="text-base font-medium text-slate-300">Email</label>
+                            <Input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            <label className="text-base font-medium text-slate-300">Password</label>
+                            <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                        </div>
+                        <div className="pt-4">
+                            <Button text={loading ? "Creating account…" : "Create account"} type="submit" disabled={loading} />
+                        </div>
+                    </form>
+
+                    <div className="text-center text-base text-slate-500 mt-10">
+                        Already have an account?{" "}
+                        <Link to="/login" className="font-semibold text-indigo-400 hover:text-indigo-300 transition">Sign in</Link>
                     </div>
-
-                    <Button
-                        text={loading ? "Registering..." : "Create Account"}
-                        type="submit"
-                        disabled={loading}
-                    />
-                </form>
-
-                <div className="text-center text-sm text-slate-600 pt-2">
-                    Already have an account?{" "}
-                    <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition">
-                        Log in
-                    </Link>
                 </div>
             </div>
         </div>

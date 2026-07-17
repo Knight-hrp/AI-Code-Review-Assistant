@@ -7,5 +7,6 @@ const reviewController = require("../controllers/reviewController");
 
 router.post("/", verifyToken, reviewController.createReview);
 router.get("/", verifyToken, reviewController.getReviews);
+router.get("/:id", verifyToken, reviewController.getReviewById);
 
 module.exports = router;
